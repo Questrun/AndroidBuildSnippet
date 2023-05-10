@@ -1,0 +1,15 @@
+source $(pwd)/build
+plat="/AndroidSdk/platforms/android-$target/android.jar";
+sdk="/AndroidSdk/build-tools/$tools";
+case $1 in
+  kotlin)
+    kotlinc $(pwd)/kotlin/*.kt -include-runtime -d $(pwd)/libs/kotlin_code.jar;;
+  link)
+    $sdk/aapt package -v -f -m -S $proj/src/res -J $proj/src/java -M $proj/src/AndroidManifest.xml -I $plat;;
+  compile)  
+     javac -verbose -d $proj/compiled/ -classpath $plat -sourcepath $proj/src/java $proj/src/java/$address/$app/*.java
+$sdk/dx --dex --verbose --output=$proj/obj/classes.dex $proj/compiled;
+$sdk/aapt package -v -f -M $proj/src/AndroidManifest.xml -S $proj/src/res/ -I $plat -F $proj/bin/output$variant.apk $proj/obj;
+jarsigner -verbose -keystore $(pwd)/AndroidTest.keystore -storepass password -keypass password -signedjar $proj/bin/jar-sign$variant.apk $proj/bin/output$variant.apk KeyName;
+/AndroidSdk/build-tools/28.0.0/apksigner sign --ks $(pwd)/AndroidTest.keystore --ks-key-alias AndroidTestKey --ks-pass pass:password --key-pass pass:password  --out $proj/bin/final$variant.apk $proj/bin/jar-sign$variant.apk;;
+esac

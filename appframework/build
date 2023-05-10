@@ -1,0 +1,6 @@
+app="appdemo";
+address="com/zokemore";
+target="28";
+tools="28.0.0";
+variant="test";
+proj=$(pwd);
